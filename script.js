@@ -133,7 +133,7 @@ function renderDashboard(data) {
       },
       plugins: { 
         legend: { labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } }, padding: 10 }, 
-        datalabels: { color: '#334155', anchor: 'end', align: 'top', font: { weight: 'bold', size: 12 }, formatter: v => v > 0 ? v : '' } // ลดขนาดเลขบนแท่ง
+        datalabels: { color: '#334155', anchor: 'end', align: 'top', font: { weight: 'bold', size: 12 }, formatter: v => v > 0 ? v : '' } 
       }
     }
   });
@@ -154,7 +154,7 @@ function renderDashboard(data) {
       responsive: true, maintainAspectRatio: false, cutout: '65%', 
       plugins: {
         legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8, padding: 15, font: { size: 11 } } }, 
-        datalabels: { color: '#ffffff', font: { weight: 'bold', size: 12 }, textAlign: 'center', textShadowBlur: 4, textShadowColor: 'rgba(0,0,0,0.3)', padding: 5, formatter: (value, ctx) => { if (value === 0) return ''; let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); let percentage = (value * 100 / sum).toFixed(1) + "%"; return `${value} คัน\n(${percentage})`; } } // ลดขนาดเลขบนโดนัท
+        datalabels: { color: '#ffffff', font: { weight: 'bold', size: 12 }, textAlign: 'center', textShadowBlur: 4, textShadowColor: 'rgba(0,0,0,0.3)', padding: 5, formatter: (value, ctx) => { if (value === 0) return ''; let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); let percentage = (value * 100 / sum).toFixed(1) + "%"; return `${value} คัน\n(${percentage})`; } } 
       }
     }
   });
@@ -185,12 +185,32 @@ function loadScoreHistory() {
     .then(res => {
       if(res.result === 'success') {
         let html = '';
-        res.data.reverse().slice(0, 10).forEach(h => {
+        
+        // 1. นำข้อมูลมากลับด้าน (ใหม่สุดอยู่บน)
+        const reversedData = res.data.reverse();
+        
+        // 2. ใช้ Set ในการช่วยกรอง (จับกลุ่ม) เอาเฉพาะอันล่าสุดของแต่ละคน+วิชา
+        const uniqueHistory = [];
+        const seen = new Set();
+        
+        reversedData.forEach(h => {
+            // สร้าง Key สำหรับตรวจสอบการซ้ำ เช่น "เอกชัย เกษรบัว_การเจรจาต่อรอง"
+            let key = h.name + "_" + h.topic; 
+            
+            // ถ้าระบบยังไม่เคยจำ Key นี้ แปลว่าเป็นข้อมูลรอบล่าสุด ให้เก็บไว้เลย
+            if(!seen.has(key)) {
+                seen.add(key);
+                uniqueHistory.push(h);
+            }
+        });
+
+        // 3. นำข้อมูลที่กรองจนเหลือแค่การ์ดเดียวต่อคนมาลูปสร้างหน้าตา
+        uniqueHistory.slice(0, 10).forEach(h => {
           let scoreClass = (h.score/h.full >= 0.8) ? '#10b981' : (h.score/h.full >= 0.5 ? '#f59e0b' : '#ef4444');
           html += `
             <div class="history-item">
               <div><b>${h.name}</b><br><span class="history-topic">${h.topic}</span><br><small style="color:#94a3b8;">${new Date(h.date).toLocaleDateString('th-TH')}</small></div>
-              <div class="history-score" style="color: ${scoreClass};">${h.score}/${h.full}</div>
+              <div class="history-score" style="color: ${scoreClass}; text-align: right;">${h.score}/${h.full}<br><span style="font-size: 11px; color:#94a3b8; font-weight: normal;">รอบที่สอบ: ${h.attempt}</span></div>
             </div>`;
         });
         document.getElementById('score-history-container').innerHTML = html || '<p style="text-align:center; color:#94a3b8; padding: 20px;">ยังไม่มีประวัติการทำแบบทดสอบ</p>';
