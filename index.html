@@ -4,10 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Executive Dashboard & Training</title>
-  
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 </head>
@@ -32,7 +30,6 @@
   </div>
 
   <div id="tab-dashboard" class="tab-content active">
-    
     <div class="controls">
       <div class="control-box">
         <i class="fas fa-calendar-alt" style="color: #64748b; margin-right: 8px;"></i>
@@ -85,58 +82,81 @@
         </div>
       </div>
     </div>
-    
     <div class="status-text" id="last_update"></div>
   </div>
 
   <div id="tab-training" class="tab-content" style="display: none;">
     <div class="training-container">
       
-      <div class="training-header">
-        <h2><i class="fas fa-book-open"></i> ระบบประเมินและฝึกอบรม</h2>
-        <p>เลือกที่ปรึกษางานบริการและหัวข้อเพื่อเริ่มต้นทำแบบทดสอบ</p>
+      <div id="quiz-selection">
+        <div class="training-header">
+          <h2><i class="fas fa-book-open"></i> ระบบประเมินและฝึกอบรม</h2>
+          <p>เลือกที่ปรึกษางานบริการและหัวข้อเพื่อเริ่มต้นทำแบบทดสอบ</p>
+        </div>
+
+        <div class="training-controls">
+          <div class="form-group">
+            <label><i class="fas fa-user-tie"></i> ชื่อผู้เข้าสอบ</label>
+            <select id="quiz_user_name">
+              <option value="เอกชัย เกษรบัว">เอกชัย เกษรบัว</option>
+              <option value="พรเทพ ม่วงรัก">พรเทพ ม่วงรัก</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-file-alt"></i> หัวข้อแบบทดสอบ</label>
+            <select id="quiz_topic_list">
+              <option value="">-- กำลังโหลดหัวข้อ --</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="prepareQuiz()">
+            เริ่มทำแบบทดสอบ <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <div class="history-section">
+          <h3><i class="fas fa-medal"></i> ประวัติการทดสอบล่าสุด</h3>
+          <div class="history-list" id="score-history-container">
+            <p style="text-align:center; color:#94a3b8; padding: 20px;">กำลังโหลดประวัติ...</p>
+          </div>
+        </div>
       </div>
 
-      <div class="training-controls">
-        <div class="form-group">
-          <label><i class="fas fa-user-tie"></i> ชื่อผู้เข้าสอบ</label>
-          <select id="quiz_user">
-            <option value="เอกชัย เกษรบัว">เอกชัย เกษรบัว</option>
-            <option value="พรเทพ ม่วงรัก">พรเทพ ม่วงรัก</option>
-          </select>
+      <div id="quiz-container" style="display: none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+          <h3 id="current_quiz_title" style="color:#0ea5e9; margin:0; font-size: 18px;"></h3>
+          <span id="quiz_step" style="background:#e0f2fe; padding:6px 14px; border-radius:20px; font-weight:600; color:#0284c7; font-size: 14px;"></span>
         </div>
-        <div class="form-group">
-          <label><i class="fas fa-file-alt"></i> หัวข้อแบบทดสอบ</label>
-          <select id="quiz_topic">
-            <option value="">-- กำลังโหลดหัวข้อ --</option>
-          </select>
+        
+        <div id="question_box" class="quiz-card">
+          <div id="q_text" class="quiz-q-text"></div>
+          <div id="options_container" class="quiz-options-wrapper"></div>
+          
+          <div id="explanation_box" class="explanation-card">
+            <div class="explain-header"><i class="fas fa-lightbulb" style="color:#f59e0b;"></i> คำอธิบายเพิ่มเติม</div>
+            <div id="explanation_text" class="explain-body"></div>
+          </div>
         </div>
-        <button class="btn-primary" onclick="alert('ฟังก์ชันนี้กำลังเชื่อมต่อกับระบบหลังบ้าน!')">
-          เริ่มทำแบบทดสอบ <i class="fas fa-arrow-right"></i>
+
+        <button id="next-q-btn" class="btn-primary" style="display:none; margin-top: 25px; background: linear-gradient(135deg, #10b981, #059669);" onclick="nextQuestion()">
+          ข้อถัดไป <i class="fas fa-arrow-right"></i>
         </button>
       </div>
 
-      <div class="history-section">
-        <h3><i class="fas fa-medal"></i> ประวัติการทดสอบล่าสุด</h3>
-        <div class="history-list" id="score_history">
-          <div class="history-item">
-             <div>
-               <b>เอกชัย เกษรบัว</b><br>
-               <span class="history-topic">การเจรจาติดตามลูกค้า (จำลอง)</span>
-             </div>
-             <div class="history-score">10/10</div>
-          </div>
-          <div class="history-item">
-             <div>
-               <b>พรเทพ ม่วงรัก</b><br>
-               <span class="history-topic">ความรู้เรื่องอะไหล่ (จำลอง)</span>
-             </div>
-             <div class="history-score" style="color:#f59e0b;">7/10</div>
-          </div>
-        </div>
+      <div id="quiz-result" style="display: none; text-align: center; padding: 30px 20px;">
+        <div id="result-icon" style="font-size: 70px; margin-bottom: 20px;"></div>
+        <h2 id="result-score-text" style="color: #0f172a; font-size: 28px; margin-bottom: 10px;"></h2>
+        <p id="result-attempt-text" style="color: #64748b; font-size: 15px; margin-bottom: 30px; font-weight: 500;"></p>
+        <button class="btn-primary" onclick="resetQuiz()" style="max-width: 250px; margin: 0 auto; background: linear-gradient(135deg, #64748b, #475569);">
+          <i class="fas fa-home"></i> กลับสู่หน้าหลัก
+        </button>
       </div>
 
     </div>
+  </div>
+
+  <div id="loading-overlay" class="overlay" style="display: none;">
+    <div class="spinner"></div>
+    <p style="color: white; font-weight: 500; margin-top: 15px; font-size: 15px;">กำลังเชื่อมต่อฐานข้อมูล...</p>
   </div>
 
   <script src="script.js"></script>
