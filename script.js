@@ -3,13 +3,31 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzRJxiBfL87wbDDapTklIW0
 let barChartInst = null;
 let pieChartInst = null;
 
-// ลงทะเบียน Plugin แสดงตัวเลขบนกราฟ
 Chart.register(ChartDataLabels);
-
-// ตั้งค่า Global Font ให้กับ Chart.js เป็นฟอนต์ Prompt
 Chart.defaults.font.family = "'Prompt', sans-serif";
 Chart.defaults.color = '#64748b';
 
+// ==========================================
+// 🌟 ฟังก์ชันสลับ Tab (ใหม่)
+// ==========================================
+function switchTab(tabId, btnElement) {
+  // ซ่อนทุกแท็บ
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.style.display = 'none';
+  });
+  // นำคลาส active ออกจากทุกปุ่ม
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+
+  // แสดงแท็บที่เลือก และเปลี่ยนสไตล์ปุ่ม
+  document.getElementById(tabId).style.display = 'block';
+  btnElement.classList.add('active');
+}
+
+// ==========================================
+// 🌟 ระบบ Dashboard เดิม
+// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
   fetch(`${API_URL}?action=getSheets`)
     .then(response => response.json())
@@ -62,15 +80,11 @@ function loadData() {
 function renderDashboard(data) {
   document.getElementById('loading').style.display = 'none';
   
-  // รวมตัวแปรพื้นฐาน
   const totalAppointed = data.ekachai.appointed + data.pornthep.appointed;
   const totalNotAppointed = data.ekachai.notAppointed + data.pornthep.notAppointed;
   const totalCalled = totalAppointed + totalNotAppointed;
   const totalPending = (data.ekachai.pending + data.pornthep.pending) + (data.total - (totalCalled + data.ekachai.pending + data.pornthep.pending));
   
-  // ----------------------------------------------------
-  // 🔥 อัปเดต Progress Bar (Dynamic Gradient) 🔥
-  // ----------------------------------------------------
   let percent = data.total > 0 ? Math.round((totalCalled / data.total) * 100) : 0;
   
   const progFill = document.getElementById('prog_fill');
@@ -119,21 +133,16 @@ function renderDashboard(data) {
   const now = new Date();
   document.getElementById('last_update').innerText = "อัปเดตข้อมูลล่าสุด: " + now.toLocaleTimeString('th-TH');
 
-  // ==========================================
-  // 🔥 1. Bar Chart (Gradient Colors) 🔥
-  // ==========================================
   const barCanvas = document.getElementById('barChart');
   const barCtx = barCanvas.getContext('2d');
   
-  // สร้างสี Gradient สำหรับแท่งสีเขียว
   let barGradientGreen = barCtx.createLinearGradient(0, 0, 0, 360);
-  barGradientGreen.addColorStop(0, '#34d399'); // สว่างบน
-  barGradientGreen.addColorStop(1, '#059669'); // เข้มล่าง
+  barGradientGreen.addColorStop(0, '#34d399'); 
+  barGradientGreen.addColorStop(1, '#059669'); 
 
-  // สร้างสี Gradient สำหรับแท่งสีแดง
   let barGradientRed = barCtx.createLinearGradient(0, 0, 0, 360);
-  barGradientRed.addColorStop(0, '#f87171'); // สว่างบน
-  barGradientRed.addColorStop(1, '#dc2626'); // เข้มล่าง
+  barGradientRed.addColorStop(0, '#f87171'); 
+  barGradientRed.addColorStop(1, '#dc2626'); 
 
   if (barChartInst) barChartInst.destroy();
   barChartInst = new Chart(barCtx, {
@@ -144,13 +153,13 @@ function renderDashboard(data) {
         { 
           label: 'นัดหมายสำเร็จ', 
           data: [data.ekachai.appointed, data.pornthep.appointed], 
-          backgroundColor: barGradientGreen, // ใช้ Gradient
+          backgroundColor: barGradientGreen, 
           borderRadius: 4 
         },
         { 
           label: 'ไม่นัดหมาย', 
           data: [data.ekachai.notAppointed, data.pornthep.notAppointed], 
-          backgroundColor: barGradientRed, // ใช้ Gradient
+          backgroundColor: barGradientRed, 
           borderRadius: 4
         }
       ]
@@ -175,13 +184,9 @@ function renderDashboard(data) {
     }
   });
 
-  // ==========================================
-  // 🔥 2. Donut Chart (Gradient Colors) 🔥
-  // ==========================================
   const pieCanvas = document.getElementById('pieChart');
   const pieCtx = pieCanvas.getContext('2d');
 
-  // สร้างสี Gradient สำหรับส่วนต่างๆ ของโดนัท
   let pieGradGreen = pieCtx.createLinearGradient(0, 0, 0, 360);
   pieGradGreen.addColorStop(0, '#34d399'); 
   pieGradGreen.addColorStop(1, '#059669');
@@ -190,10 +195,9 @@ function renderDashboard(data) {
   pieGradRed.addColorStop(0, '#fb7185'); 
   pieGradRed.addColorStop(1, '#e11d48');
 
-  // สีรอดำเนินการ: เปลี่ยนเป็น Gradient สีฟ้าตามคำขอ
   let pieGradBlue = pieCtx.createLinearGradient(0, 0, 0, 360);
-  pieGradBlue.addColorStop(0, '#7dd3fc'); // สีฟ้าอ่อน
-  pieGradBlue.addColorStop(1, '#0284c7'); // สีฟ้าเข้ม
+  pieGradBlue.addColorStop(0, '#7dd3fc'); 
+  pieGradBlue.addColorStop(1, '#0284c7'); 
 
   if (pieChartInst) pieChartInst.destroy();
   pieChartInst = new Chart(pieCtx, {
@@ -202,7 +206,7 @@ function renderDashboard(data) {
       labels: ['นัดหมายสำเร็จ', 'ไม่นัดหมาย', 'รอดำเนินการ'],
       datasets: [{
         data: [totalAppointed, totalNotAppointed, totalPending],
-        backgroundColor: [pieGradGreen, pieGradRed, pieGradBlue], // ใส่ Gradient ทั้ง 3 สี
+        backgroundColor: [pieGradGreen, pieGradRed, pieGradBlue], 
         borderWidth: 0,
         hoverOffset: 4
       }]
@@ -214,7 +218,7 @@ function renderDashboard(data) {
       plugins: {
         legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8, padding: 20, font: { size: 13 } } }, 
         datalabels: {
-          color: '#ffffff', // บังคับให้เป็นสีขาวทั้งหมดเพื่อให้เข้ากับสี Gradient สดๆ
+          color: '#ffffff', 
           font: { weight: 'bold', size: 14 }, 
           textAlign: 'center',
           textShadowBlur: 4,
@@ -224,7 +228,6 @@ function renderDashboard(data) {
             if (value === 0) return ''; 
             let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
             let percentage = (value * 100 / sum).toFixed(1) + "%";
-            
             return `${value} คัน\n(${percentage})`;
           }
         }
