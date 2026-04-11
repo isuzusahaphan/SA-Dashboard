@@ -6,7 +6,9 @@
   <title>Dashboard ติดตามลูกค้าค้างซ่อม</title>
   
   <link rel="stylesheet" href="style.css">
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 </head>
 <body>
 
@@ -47,6 +49,9 @@
       <h3>เปรียบเทียบผลงานการนัดหมาย (คัน)</h3>
       <div class="canvas-wrapper">
         <canvas id="barChart"></canvas>
+      </div>
+      <div class="sa-last-update">
+        ⏱️ โทรติดตามล่าสุด: <b>เอกชัย</b> (<span id="update_eka">-</span>) | <b>พรเทพ</b> (<span id="update_porn">-</span>)
       </div>
     </div>
     <div class="chart-box">
