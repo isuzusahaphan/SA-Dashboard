@@ -1,15 +1,13 @@
-/* นำเข้าฟอนต์ Prompt ให้ดูทันสมัยและพรีเมียม */
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap');
 
 body { 
   font-family: 'Prompt', 'Segoe UI', sans-serif; 
-  background-color: #f8fafc; /* เปลี่ยนเป็นสีเทาอ่อนแบบสะอาดตา */
+  background-color: #f8fafc; 
   margin: 0; 
   padding: 20px 30px; 
   color: #334155; 
 }
 
-/* Header */
 .header { 
   display: flex; 
   align-items: center; 
@@ -22,14 +20,13 @@ body {
 }
 .header-left { flex: 1; display: flex; align-items: center; }
 .header-center { flex: 2; text-align: center; }
-.header-right { flex: 1; } /* เว้นไว้เพื่อ Balance พื้นที่ให้ตรงกลางเป๊ะๆ */
+.header-right { flex: 1; } 
 
 .logo { height: 35px; object-fit: contain; }
 
 .header h1 { color: #1e293b; margin: 0 0 4px 0; font-size: 16px; font-weight: 600; }
 .header p { margin: 0; font-size: 11px; color: #64748b; font-weight: 300;}
 
-/* Controls */
 .controls { 
   display: flex; 
   justify-content: center; 
@@ -56,7 +53,6 @@ select:focus {
 }
 .loading-text { color: #3b82f6; font-size: 12px; font-weight: 500; }
 
-/* Summary Cards (Minimalist Style) */
 .summary-cards { 
   display: grid; 
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
@@ -84,7 +80,6 @@ select:focus {
 .card.green .number { color: #10b981; }
 .card.blue .number { color: #0ea5e9; }
 
-/* Charts Area */
 .charts-container { 
   display: grid; 
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
@@ -103,7 +98,6 @@ select:focus {
   font-size: 13px; 
   font-weight: 500; 
 }
-/* บังคับขนาดกราฟให้กระชับ ไม่ยืดใหญ่เกินไป */
 .canvas-wrapper { 
   position: relative; 
   height: 200px; 
@@ -112,9 +106,28 @@ select:focus {
   justify-content: center;
 }
 
+/* กล่องข้อความอัปเดตล่าสุด ใต้กราฟแท่ง */
+.sa-last-update {
+  text-align: center;
+  font-size: 11.5px;
+  color: #64748b;
+  margin-top: 15px;
+  background: #f1f5f9;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+.sa-last-update b { color: #334155; }
+.sa-last-update span { color: #0ea5e9; font-weight: 600; }
+
 .status-text { 
   text-align: center; 
   font-size: 11px; 
   color: #94a3b8; 
   margin-top: 20px; 
+}
+
+@media (max-width: 600px) {
+  .header { flex-direction: column; gap: 10px; }
+  .header-left, .header-right { flex: none; width: 100%; text-align: center;}
 }
