@@ -20,7 +20,6 @@ function switchTab(tabId, btnElement) {
   document.getElementById(tabId).style.display = 'block';
   btnElement.classList.add('active');
 
-  // จัดการการโหลดข้อมูลตาม Tab
   if (tabId === 'tab-dashboard') {
     loadData();
     if(!dashboardInterval) dashboardInterval = setInterval(loadData, 30000);
@@ -80,7 +79,6 @@ function renderDashboard(data) {
   const totalCalled = totalAppointed + totalNotAppointed;
   const totalPending = (data.ekachai.pending + data.pornthep.pending) + (data.total - (totalCalled + data.ekachai.pending + data.pornthep.pending));
   
-  // Progress Bar
   let percent = data.total > 0 ? Math.round((totalCalled / data.total) * 100) : 0;
   const progFill = document.getElementById('prog_fill');
   const progText = document.getElementById('prog_text');
@@ -129,8 +127,14 @@ function renderDashboard(data) {
     },
     options: { 
       responsive: true, maintainAspectRatio: false, 
-      scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 12 } }, grid: { color: '#f1f5f9' }, suggestedMax: 8 }, x: { ticks: { font: { size: 12 } }, grid: { display: false } } },
-      plugins: { legend: { labels: { usePointStyle: true, boxWidth: 8, font: { size: 12 } }, padding: 15 }, datalabels: { color: '#334155', anchor: 'end', align: 'top', font: { weight: 'bold', size: 14 }, formatter: v => v > 0 ? v : '' } }
+      scales: { 
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#f1f5f9' }, suggestedMax: 8 }, 
+        x: { ticks: { font: { size: 11 } }, grid: { display: false } } 
+      },
+      plugins: { 
+        legend: { labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } }, padding: 10 }, 
+        datalabels: { color: '#334155', anchor: 'end', align: 'top', font: { weight: 'bold', size: 12 }, formatter: v => v > 0 ? v : '' } // ลดขนาดเลขบนแท่ง
+      }
     }
   });
 
@@ -147,10 +151,10 @@ function renderDashboard(data) {
       datasets: [{ data: [totalAppointed, totalNotAppointed, totalPending], backgroundColor: [pieGradGreen, pieGradRed, pieGradBlue], borderWidth: 0, hoverOffset: 4 }]
     },
     options: { 
-      responsive: true, maintainAspectRatio: false, cutout: '60%', 
+      responsive: true, maintainAspectRatio: false, cutout: '65%', 
       plugins: {
-        legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8, padding: 20, font: { size: 13 } } }, 
-        datalabels: { color: '#ffffff', font: { weight: 'bold', size: 14 }, textAlign: 'center', textShadowBlur: 4, textShadowColor: 'rgba(0,0,0,0.3)', padding: 8, formatter: (value, ctx) => { if (value === 0) return ''; let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); let percentage = (value * 100 / sum).toFixed(1) + "%"; return `${value} คัน\n(${percentage})`; } }
+        legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8, padding: 15, font: { size: 11 } } }, 
+        datalabels: { color: '#ffffff', font: { weight: 'bold', size: 12 }, textAlign: 'center', textShadowBlur: 4, textShadowColor: 'rgba(0,0,0,0.3)', padding: 5, formatter: (value, ctx) => { if (value === 0) return ''; let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); let percentage = (value * 100 / sum).toFixed(1) + "%"; return `${value} คัน\n(${percentage})`; } } // ลดขนาดเลขบนโดนัท
       }
     }
   });
