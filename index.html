@@ -19,26 +19,24 @@
       <h1>ศูนย์ข้อมูลและติดตามงานค้างซ่อม</h1>
       <p>Executive Portal & Training Center</p>
     </div>
-    <div class="header-right"></div>
-  </div>
+    
+    <div class="header-right">
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('tab-dashboard', this)"><i class="fas fa-chart-line"></i> แดชบอร์ดสรุปผล</button>
+        <button class="tab-btn" onclick="switchTab('tab-training', this)"><i class="fas fa-graduation-cap"></i> ศูนย์ฝึกอบรมพนักงาน</button>
+      </div>
 
-  <div class="tab-container">
-    <div class="tab-nav">
-      <button class="tab-btn active" onclick="switchTab('tab-dashboard', this)"><i class="fas fa-chart-line"></i> แดชบอร์ดสรุปผล</button>
-      <button class="tab-btn" onclick="switchTab('tab-training', this)"><i class="fas fa-graduation-cap"></i> ศูนย์ฝึกอบรมพนักงาน</button>
+      <div class="control-box" id="top-controls">
+        <i class="fas fa-calendar-alt" style="color: #64748b; margin-right: 8px;"></i>
+        <label>เลือกรอบบิล:</label>
+        <select id="sheetSelect"></select>
+        <span id="loading" class="loading-text" style="display:none;"><i class="fas fa-spinner fa-spin"></i></span>
+      </div>
     </div>
   </div>
 
   <div id="tab-dashboard" class="tab-content active">
-    <div class="controls">
-      <div class="control-box">
-        <i class="fas fa-calendar-alt" style="color: #64748b; margin-right: 8px;"></i>
-        <label>เลือกรอบบิล:</label>
-        <select id="sheetSelect"></select>
-      </div>
-      <span id="loading" class="loading-text" style="display:none;"><i class="fas fa-spinner fa-spin"></i> กำลังประมวลผล...</span>
-    </div>
-
+    
     <div class="progress-section">
       <div class="progress-header">
         <span class="progress-title">ภาพรวมความคืบหน้าการโทรติดตาม</span>
