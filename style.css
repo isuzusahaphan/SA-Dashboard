@@ -6,7 +6,7 @@ body {
   margin: 0; 
   padding: 20px 30px; 
   color: #334155; 
-  padding-bottom: 40px; /* เพิ่ม padding ท้ายสุดเพื่อให้ดูไม่ติดขอบเกินไป */
+  padding-bottom: 40px; 
 }
 
 .header { 
@@ -14,7 +14,7 @@ body {
   align-items: center; 
   justify-content: space-between; 
   background: #ffffff;
-  padding: 15px 25px; /* เพิ่ม padding หัวข้อ */
+  padding: 15px 25px; 
   border-radius: 12px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.03);
   margin-bottom: 25px;
@@ -23,9 +23,9 @@ body {
 .header-center { flex: 2; text-align: center; }
 .header-right { flex: 1; } 
 
-.logo { height: 40px; object-fit: contain; } /* ขยายโลโก้ */
+.logo { height: 40px; object-fit: contain; } 
 
-.header h1 { color: #1e293b; margin: 0 0 5px 0; font-size: 18px; font-weight: 600; } /* ขยายขนาดหัวข้อ */
+.header h1 { color: #1e293b; margin: 0 0 5px 0; font-size: 18px; font-weight: 600; } 
 .header p { margin: 0; font-size: 12px; color: #64748b; font-weight: 300;}
 
 .controls { 
@@ -34,7 +34,7 @@ body {
   gap: 12px; 
   margin-bottom: 25px; 
   align-items: center; 
-  font-size: 14px; /* ขยายขนาดตัวเลือก */
+  font-size: 14px; 
   color: #475569;
 }
 select { 
@@ -54,20 +54,64 @@ select:focus {
 }
 .loading-text { color: #3b82f6; font-size: 13px; font-weight: 500; }
 
-/* Summary Cards (ขยายขนาด) */
+/* 🔥 Progress Bar Section 🔥 */
+.progress-section {
+  background: #ffffff;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+  margin-bottom: 30px;
+}
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.progress-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #475569;
+}
+.progress-percent {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3b82f6;
+}
+.progress-bar-bg {
+  width: 100%;
+  height: 14px;
+  background-color: #e2e8f0;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #64748b, #94a3b8);
+  border-radius: 20px;
+  transition: width 1.2s ease-out, background 0.5s ease;
+}
+.progress-motivation {
+  text-align: center;
+  font-size: 13.5px;
+  margin-top: 15px;
+}
+
+/* Summary Cards */
 .summary-cards { 
   display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* ขยายขนาดการ์ดเริ่มต้น */
-  gap: 20px; /* เพิ่มระยะห่าง */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+  gap: 20px; 
   margin-bottom: 30px; 
 }
 .card { 
   background: #ffffff; 
-  padding: 20px 25px; /* เพิ่ม padding การ์ด */
+  padding: 20px 25px; 
   border-radius: 12px; 
   box-shadow: 0 3px 10px rgba(0,0,0,0.03); 
   text-align: center; 
-  border-left: 5px solid #cbd5e1; /* ขยายความกว้างขอบ */
+  border-left: 5px solid #cbd5e1; 
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card:hover { 
@@ -78,19 +122,19 @@ select:focus {
 .card.blue { border-left-color: #0ea5e9; }
 
 .card h3 { margin: 0 0 8px 0; color: #64748b; font-size: 13px; font-weight: 500; }
-.card .number { font-size: 36px; font-weight: 600; color: #1e293b; line-height: 1.1; } /* ขยายขนาดตัวเลข */
+.card .number { font-size: 36px; font-weight: 600; color: #1e293b; line-height: 1.1; } 
 .card.green .number { color: #10b981; }
 .card.blue .number { color: #0ea5e9; }
 
-/* Charts Area (ขยายพื้นที่) */
+/* Charts Area */
 .charts-container { 
   display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); /* ขยายขนาดกรอบกราฟเริ่มต้น */
-  gap: 30px; /* เพิ่มระยะห่าง */
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); 
+  gap: 30px; 
 }
 .chart-box { 
   background: #ffffff; 
-  padding: 25px; /* เพิ่ม padding กรอบกราฟ */
+  padding: 25px; 
   border-radius: 12px; 
   box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
 }
@@ -98,26 +142,23 @@ select:focus {
   text-align: center; 
   color: #475569; 
   margin: 0 0 20px 0; 
-  font-size: 16px; /* ขยายขนาดหัวข้อกราฟ */
+  font-size: 16px; 
   font-weight: 500; 
 }
-
-/* 🔥 ส่วนที่ปรับขยายความสูง: ขยายความสูงอย่างมากเพื่อให้ยืดตัวลงมาด้านล่าง 🔥 */
 .canvas-wrapper { 
   position: relative; 
-  height: 400px; /* 🔥 ขยายความสูงจากเดิม 200px เป็น 400px 🔥 */
+  height: 400px; 
   width: 100%; 
   display: flex; 
   justify-content: center;
 }
-
 .sa-last-update {
   text-align: center;
-  font-size: 13px; /* ขยายขนาดตัวอักษรล่าสุด */
+  font-size: 13px; 
   color: #64748b;
-  margin-top: 20px; /* เพิ่มระยะห่างด้านบน */
+  margin-top: 20px; 
   background: #f1f5f9;
-  padding: 10px; /* เพิ่ม padding */
+  padding: 10px; 
   border-radius: 8px;
   border: 1px solid #e2e8f0;
 }
@@ -126,7 +167,7 @@ select:focus {
 
 .status-text { 
   text-align: center; 
-  font-size: 12px; /* ขยายขนาดตัวอักษรอัปเดตล่าสุดของแอป */
+  font-size: 12px; 
   color: #94a3b8; 
   margin-top: 25px; 
 }
@@ -134,5 +175,5 @@ select:focus {
 @media (max-width: 600px) {
   .header { flex-direction: column; gap: 10px; padding: 10px; }
   .header-left, .header-right { flex: none; width: 100%; text-align: center;}
-  .canvas-wrapper { height: 300px; } /* ปรับขนาดเมื่อจอมือถือ */
+  .canvas-wrapper { height: 300px; } 
 }
