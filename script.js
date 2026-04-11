@@ -20,10 +20,15 @@ function switchTab(tabId, btnElement) {
   document.getElementById(tabId).style.display = 'block';
   btnElement.classList.add('active');
 
+  // 🔥 จัดการแสดงผลส่วน "เลือกรอบบิล" มุมขวาบน 🔥
+  const topControls = document.getElementById('top-controls');
+
   if (tabId === 'tab-dashboard') {
+    topControls.style.display = 'flex'; // แสดงกลับมาเมื่ออยู่หน้า Dashboard
     loadData();
     if(!dashboardInterval) dashboardInterval = setInterval(loadData, 30000);
   } else {
+    topControls.style.display = 'none'; // ซ่อนหายไปเมื่ออยู่หน้า Training
     if(dashboardInterval) { clearInterval(dashboardInterval); dashboardInterval = null; }
     if (tabId === 'tab-training') {
       loadQuizTopics();
@@ -194,23 +199,19 @@ function loadScoreHistory() {
         const seen = new Set();
         
         reversedData.forEach(h => {
-            // สร้าง Key สำหรับตรวจสอบการซ้ำ เช่น "เอกชัย เกษรบัว_การเจรจาต่อรอง"
             let key = h.name + "_" + h.topic; 
-            
-            // ถ้าระบบยังไม่เคยจำ Key นี้ แปลว่าเป็นข้อมูลรอบล่าสุด ให้เก็บไว้เลย
             if(!seen.has(key)) {
                 seen.add(key);
                 uniqueHistory.push(h);
             }
         });
 
-        // 3. นำข้อมูลที่กรองจนเหลือแค่การ์ดเดียวต่อคนมาลูปสร้างหน้าตา
         uniqueHistory.slice(0, 10).forEach(h => {
           let scoreClass = (h.score/h.full >= 0.8) ? '#10b981' : (h.score/h.full >= 0.5 ? '#f59e0b' : '#ef4444');
           html += `
-            <div class="history-item">
-              <div><b>${h.name}</b><br><span class="history-topic">${h.topic}</span><br><small style="color:#94a3b8;">${new Date(h.date).toLocaleDateString('th-TH')}</small></div>
-              <div class="history-score" style="color: ${scoreClass}; text-align: right;">${h.score}/${h.full}<br><span style="font-size: 11px; color:#94a3b8; font-weight: normal;">รอบที่สอบ: ${h.attempt}</span></div>
+            <div class="history-item" style="border-left: 4px solid ${scoreClass}; background:#fff; padding: 15px; border-radius: 8px; margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+              <div><b style="color:#1e293b; font-size: 14px;">${h.name}</b><br><span style="color:#64748b; font-size: 12.5px;">${h.topic}</span><br><small style="color:#94a3b8;">${new Date(h.date).toLocaleDateString('th-TH')}</small></div>
+              <div style="text-align:right; font-size:12.5px; color:#475569;">คะแนน: <b style="color:${scoreClass}; font-size: 18px;">${h.score}/${h.full}</b><br><span style="font-size: 11px;">รอบที่สอบ: ${h.attempt}</span></div>
             </div>`;
         });
         document.getElementById('score-history-container').innerHTML = html || '<p style="text-align:center; color:#94a3b8; padding: 20px;">ยังไม่มีประวัติการทำแบบทดสอบ</p>';
