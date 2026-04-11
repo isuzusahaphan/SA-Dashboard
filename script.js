@@ -3,7 +3,10 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzRJxiBfL87wbDDapTklIW0
 let barChartInst = null;
 let pieChartInst = null;
 
+// ลงทะเบียน Plugin แสดงตัวเลขบนกราฟ
 Chart.register(ChartDataLabels);
+
+// ตั้งค่า Global Font ให้กับ Chart.js เป็นฟอนต์ Prompt
 Chart.defaults.font.family = "'Prompt', sans-serif";
 Chart.defaults.color = '#64748b';
 
@@ -62,11 +65,11 @@ function renderDashboard(data) {
   // รวมตัวแปรพื้นฐาน
   const totalAppointed = data.ekachai.appointed + data.pornthep.appointed;
   const totalNotAppointed = data.ekachai.notAppointed + data.pornthep.notAppointed;
-  const totalCalled = totalAppointed + totalNotAppointed; // ยอดรวมที่โทรกระทำแล้ว (นัด+ไม่นัด)
+  const totalCalled = totalAppointed + totalNotAppointed;
   const totalPending = (data.ekachai.pending + data.pornthep.pending) + (data.total - (totalCalled + data.ekachai.pending + data.pornthep.pending));
   
   // ----------------------------------------------------
-  // 🔥 อัปเดต Progress Bar และข้อความให้กำลังใจ 🔥
+  // 🔥 อัปเดต Progress Bar และข้อความแบบ Dynamic Gradient 🔥
   // ----------------------------------------------------
   let percent = data.total > 0 ? Math.round((totalCalled / data.total) * 100) : 0;
   
@@ -77,29 +80,32 @@ function renderDashboard(data) {
   progText.innerText = `${percent}% (${totalCalled}/${data.total} คัน)`;
   progFill.style.width = `${percent > 100 ? 100 : percent}%`;
 
-  // เปลี่ยนสีบาร์และข้อความตาม Step ความสำเร็จ
+  // เปลี่ยนบาร์และข้อความเป็น Dynamic Gradient (แดง -> ส้ม -> เขียว)
   if (percent >= 100) {
-    progFill.style.background = 'linear-gradient(90deg, #10b981, #34d399)'; // สีเขียวฉลอง
+    progFill.style.background = 'linear-gradient(90deg, #10b981, #34d399)'; // 🔥Gradient เขียว ( Emerald to Bright Emerald)
     progText.style.color = '#10b981';
     progMotiv.innerHTML = '🎉 <b>สุดยอดเยี่ยม!</b> โทรติดตามลูกค้าสำเร็จครบ 100% แล้ว ขอเสียงปรบมือให้ทุกคนครับ!';
     progMotiv.style.color = '#10b981';
   } else if (percent >= 80) {
-    progFill.style.background = 'linear-gradient(90deg, #3b82f6, #60a5fa)'; // สีฟ้า
-    progText.style.color = '#3b82f6';
-    progMotiv.innerHTML = '🔥 <b>โค้งสุดท้ายแล้ว!</b> ผลงานทะลุ 80% ลุยอีกนิดเดียวเป้าหมายอยู่แค่เอื้อมครับ';
-    progMotiv.style.color = '#3b82f6';
-  } else if (percent >= 50) {
-    progFill.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)'; // สีส้มทอง
+    progFill.style.background = 'linear-gradient(90deg, #f59e0b, #34d399)'; // 🔥Gradient ทองส้มไปเขียว ( Amber to Bright Emerald)
+    progFill.style.transition = 'width 1.2s ease-out, background 0.8s ease';
     progText.style.color = '#d97706';
-    progMotiv.innerHTML = '💪 <b>เดินทางมาเกินครึ่งทางแล้ว!</b> รักษาความมุ่งมั่นและมาตรฐานที่ยอดเยี่ยมนี้ต่อไปครับ';
+    progMotiv.innerHTML = '🔥 <b>โค้งสุดท้ายแล้ว!</b> ผลงานทะลุ 80% ลุยอีกนิดเดียวเป้าหมายอยู่แค่เอื้อมครับ';
     progMotiv.style.color = '#d97706';
+  } else if (percent >= 50) {
+    progFill.style.background = 'linear-gradient(90deg, #f97316, #f59e0b)'; // 🔥Gradient ส้มไปทอง ( Orange to Amber)
+    progText.style.color = '#f97316';
+    progMotiv.innerHTML = '💪 <b>เดินทางมาเกินครึ่งทางแล้ว!</b> รักษาความมุ่งมั่นและมาตรฐานที่ยอดเยี่ยมนี้ต่อไปครับ';
+    progMotiv.style.color = '#f97316';
   } else if (percent > 0) {
-    progFill.style.background = 'linear-gradient(90deg, #64748b, #94a3b8)'; // สีเทาสวยๆ
-    progText.style.color = '#475569';
+    progFill.style.background = 'linear-gradient(90deg, #ef4444, #f97316)'; // 🔥Gradient แดงไปส้ม ( Red to Orange)
+    progText.style.color = '#b71c1c';
     progMotiv.innerHTML = '🚀 <b>เริ่มต้นได้ดี!</b> ค่อยๆ สะสมยอดไปทีละคัน เป็นกำลังใจให้ทีมงานทุกคนครับ';
-    progMotiv.style.color = '#475569';
+    progMotiv.style.color = '#b71c1c';
   } else {
+    // กรณี 0% หรือข้อมูลยังไม่โหลด
     progFill.style.background = '#e2e8f0';
+    progFill.style.transition = 'width 1.2s ease-out, background 0s ease';
     progText.style.color = '#94a3b8';
     progMotiv.innerHTML = '🌱 <b>เริ่มงานรอบใหม่!</b> เตรียมพร้อมลุยกันเลยครับ สู้ๆ!';
     progMotiv.style.color = '#94a3b8';
@@ -116,7 +122,7 @@ function renderDashboard(data) {
   const now = new Date();
   document.getElementById('last_update').innerText = "อัปเดตข้อมูลล่าสุด: " + now.toLocaleTimeString('th-TH');
 
-  // --- 1. Bar Chart ---
+  // --- 1. Bar Chart (ยืดสูงขึ้น และ DataLabels 14px) ---
   const barCtx = document.getElementById('barChart').getContext('2d');
   if (barChartInst) barChartInst.destroy();
   barChartInst = new Chart(barCtx, {
@@ -133,7 +139,7 @@ function renderDashboard(data) {
         { 
           label: 'ไม่นัดหมาย', 
           data: [data.ekachai.notAppointed, data.pornthep.notAppointed], 
-          backgroundColor: '#ef4444', // สีแดง
+          backgroundColor: '#ef4444', 
           borderRadius: 4
         }
       ]
@@ -151,14 +157,14 @@ function renderDashboard(data) {
           color: '#334155',
           anchor: 'end',
           align: 'top',
-          font: { weight: 'bold', size: 14 }, 
+          font: { weight: 'bold', size: 14 }, // 🔥 ขยายขนาดจาก 12 เป็น 14 🔥
           formatter: (value) => value > 0 ? value : ''
         }
       }
     }
   });
 
-  // --- 2. Donut Chart ---
+  // --- 2. Donut Chart (ปรับให้เส้นหนาและดูเต็มขึ้นในพื้นที่ใหม่) ---
   const pieCtx = document.getElementById('pieChart').getContext('2d');
   if (pieChartInst) pieChartInst.destroy();
   pieChartInst = new Chart(pieCtx, {
