@@ -1,8 +1,5 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzRJxiBfL87wbDDapTklIW0l8Beio_DHPGfLlysYSTiU5kzlTV-3ubZekC6_1G1hWt3/exec";
 
-// ==========================================
-// 🌟 1. Global Setup
-// ==========================================
 let barChartInst = null;
 let pieChartInst = null;
 Chart.register(ChartDataLabels);
@@ -11,24 +8,30 @@ Chart.defaults.color = '#64748b';
 
 let dashboardInterval = null;
 
-// ==========================================
-// 🌟 2. Tab Navigation
-// ==========================================
+// ฟังก์ชันโชว์ Loading หรูๆ
+function showLoading(text) {
+  Swal.fire({
+    title: text,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    didOpen: () => { Swal.showLoading(); }
+  });
+}
+
 function switchTab(tabId, btnElement) {
   document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   document.getElementById(tabId).style.display = 'block';
   btnElement.classList.add('active');
 
-  // 🔥 จัดการแสดงผลส่วน "เลือกรอบบิล" มุมขวาบน 🔥
   const topControls = document.getElementById('top-controls');
 
   if (tabId === 'tab-dashboard') {
-    topControls.style.display = 'flex'; // แสดงกลับมาเมื่ออยู่หน้า Dashboard
+    topControls.style.display = 'flex';
     loadData();
     if(!dashboardInterval) dashboardInterval = setInterval(loadData, 30000);
   } else {
-    topControls.style.display = 'none'; // ซ่อนหายไปเมื่ออยู่หน้า Training
+    topControls.style.display = 'none';
     if(dashboardInterval) { clearInterval(dashboardInterval); dashboardInterval = null; }
     if (tabId === 'tab-training') {
       loadQuizTopics();
@@ -37,9 +40,6 @@ function switchTab(tabId, btnElement) {
   }
 }
 
-// ==========================================
-// 🌟 3. Dashboard Logic
-// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
   fetch(`${API_URL}?action=getSheets`)
     .then(response => response.json())
@@ -63,22 +63,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// ป้องกันการยิงพลุซ้ำซากใน 1 Session
+let hasCelebrated100 = false; 
+
 function loadData() {
   const sheetName = document.getElementById('sheetSelect').value;
   if (!sheetName) return;
-  document.getElementById('loading').style.display = 'inline';
   
   fetch(`${API_URL}?action=getData&sheetName=${encodeURIComponent(sheetName)}`)
     .then(r => r.json())
     .then(res => {
       if (res.result === 'success') renderDashboard(res.data);
-      else document.getElementById('loading').style.display = 'none';
+      else Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: 'ไม่สามารถโหลดข้อมูลได้' });
     });
 }
 
 function renderDashboard(data) {
-  document.getElementById('loading').style.display = 'none';
-  
   const totalAppointed = data.ekachai.appointed + data.pornthep.appointed;
   const totalNotAppointed = data.ekachai.notAppointed + data.pornthep.notAppointed;
   const totalCalled = totalAppointed + totalNotAppointed;
@@ -95,18 +95,28 @@ function renderDashboard(data) {
   if (percent >= 100) {
     progFill.style.background = 'linear-gradient(90deg, #10b981, #34d399)'; progText.style.color = '#10b981';
     progMotiv.innerHTML = '🎉 <b>สุดยอดเยี่ยม!</b> โทรติดตามลูกค้าสำเร็จครบ 100% แล้ว!'; progMotiv.style.color = '#10b981';
+    
+    // 🔥 ยิงพลุฉลองความสำเร็จ! (ยิงครั้งเดียวต่อการเปิดหน้าเว็บ)
+    if(!hasCelebrated100) {
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 3000 });
+        hasCelebrated100 = true;
+    }
   } else if (percent >= 80) {
     progFill.style.background = 'linear-gradient(90deg, #f59e0b, #34d399)'; progText.style.color = '#d97706';
     progMotiv.innerHTML = '🔥 <b>โค้งสุดท้าย!</b> ลุยอีกนิดเดียวเป้าหมายอยู่แค่เอื้อม'; progMotiv.style.color = '#d97706';
+    hasCelebrated100 = false; // รีเซ็ตเผื่อเปลี่ยน Sheet
   } else if (percent >= 50) {
     progFill.style.background = 'linear-gradient(90deg, #f97316, #f59e0b)'; progText.style.color = '#f97316';
     progMotiv.innerHTML = '💪 <b>มาเกินครึ่งทางแล้ว!</b> รักษามาตรฐานที่ยอดเยี่ยมนี้ต่อไป'; progMotiv.style.color = '#f97316';
+    hasCelebrated100 = false;
   } else if (percent > 0) {
     progFill.style.background = 'linear-gradient(90deg, #ef4444, #f97316)'; progText.style.color = '#b71c1c';
     progMotiv.innerHTML = '🚀 <b>เริ่มต้นได้ดี!</b> ค่อยๆ สะสมยอดไปทีละคันครับ'; progMotiv.style.color = '#b71c1c';
+    hasCelebrated100 = false;
   } else {
     progFill.style.background = '#e2e8f0'; progText.style.color = '#94a3b8';
     progMotiv.innerHTML = '🌱 <b>เริ่มงานรอบใหม่!</b> เตรียมพร้อมลุยกันเลยครับ'; progMotiv.style.color = '#94a3b8';
+    hasCelebrated100 = false;
   }
 
   document.getElementById('tot_all').innerText = data.total;
@@ -132,14 +142,8 @@ function renderDashboard(data) {
     },
     options: { 
       responsive: true, maintainAspectRatio: false, 
-      scales: { 
-        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#f1f5f9' }, suggestedMax: 8 }, 
-        x: { ticks: { font: { size: 11 } }, grid: { display: false } } 
-      },
-      plugins: { 
-        legend: { labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } }, padding: 10 }, 
-        datalabels: { color: '#334155', anchor: 'end', align: 'top', font: { weight: 'bold', size: 12 }, formatter: v => v > 0 ? v : '' } 
-      }
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#f1f5f9' }, suggestedMax: 8 }, x: { ticks: { font: { size: 11 } }, grid: { display: false } } },
+      plugins: { legend: { labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } }, padding: 10 }, datalabels: { color: '#334155', anchor: 'end', align: 'top', font: { weight: 'bold', size: 12 }, formatter: v => v > 0 ? v : '' } }
     }
   });
 
@@ -190,20 +194,13 @@ function loadScoreHistory() {
     .then(res => {
       if(res.result === 'success') {
         let html = '';
-        
-        // 1. นำข้อมูลมากลับด้าน (ใหม่สุดอยู่บน)
         const reversedData = res.data.reverse();
-        
-        // 2. ใช้ Set ในการช่วยกรอง (จับกลุ่ม) เอาเฉพาะอันล่าสุดของแต่ละคน+วิชา
         const uniqueHistory = [];
         const seen = new Set();
         
         reversedData.forEach(h => {
             let key = h.name + "_" + h.topic; 
-            if(!seen.has(key)) {
-                seen.add(key);
-                uniqueHistory.push(h);
-            }
+            if(!seen.has(key)) { seen.add(key); uniqueHistory.push(h); }
         });
 
         uniqueHistory.slice(0, 10).forEach(h => {
@@ -221,14 +218,15 @@ function loadScoreHistory() {
 
 function prepareQuiz() {
   const topic = document.getElementById('quiz_topic_list').value;
-  if(!topic) return alert("⚠️ กรุณาเลือกหัวข้อแบบทดสอบ");
+  // 🔥 เปลี่ยนจาก alert() ธรรมดา เป็น SweetAlert2 🔥
+  if(!topic) return Swal.fire({ icon: 'warning', title: 'เดี๋ยวก่อน!', text: 'กรุณาเลือกหัวข้อแบบทดสอบก่อนครับ', confirmButtonColor: '#0ea5e9' });
   
-  document.getElementById('loading-overlay').style.display = 'flex';
+  showLoading('กำลังเตรียมข้อสอบ...');
   
   fetch(`${API_URL}?action=get_quiz_questions&topic=${encodeURIComponent(topic)}`)
     .then(r => r.json())
     .then(res => {
-      document.getElementById('loading-overlay').style.display = 'none';
+      Swal.close(); // ปิดหน้าต่าง Loading
       if(res.result === 'success' && res.data.length > 0) {
         currentQuestions = res.data;
         currentQuestionIndex = 0;
@@ -238,7 +236,12 @@ function prepareQuiz() {
         document.getElementById('quiz-container').style.display = 'block';
         document.getElementById('current_quiz_title').innerText = topic;
         showQuestion();
-      } else alert("❌ ไม่พบคำถามในหัวข้อนี้");
+      } else {
+        Swal.fire({ icon: 'error', title: 'ไม่พบข้อมูล', text: 'ไม่พบคำถามในหัวข้อนี้ กรุณาติดต่อผู้ดูแลระบบ', confirmButtonColor: '#ef4444' });
+      }
+    }).catch(e => {
+        Swal.close();
+        Swal.fire({ icon: 'error', title: 'เครือข่ายขัดข้อง', text: 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้', confirmButtonColor: '#ef4444' });
     });
 }
 
@@ -290,7 +293,7 @@ function checkAnswer(userAns) {
   }
   
   document.getElementById('next-q-btn').style.display = 'block';
-  document.getElementById('next-q-btn').innerHTML = (currentQuestionIndex === currentQuestions.length - 1) ? 'ดูผลคะแนน <i class="fas fa-flag-checkered"></i>' : 'ข้อถัดไป <i class="fas fa-arrow-right"></i>';
+  document.getElementById('next-q-btn').innerHTML = (currentQuestionIndex === currentQuestions.length - 1) ? 'ส่งคำตอบประเมินผล <i class="fas fa-paper-plane"></i>' : 'ข้อถัดไป <i class="fas fa-arrow-right"></i>';
 }
 
 function nextQuestion() {
@@ -303,21 +306,36 @@ function nextQuestion() {
 }
 
 function finishQuiz() {
-  document.getElementById('loading-overlay').style.display = 'flex';
+  showLoading('กำลังประมวลผลคะแนน...');
   
   const payload = `action=save_quiz_score&name=${encodeURIComponent(document.getElementById('quiz_user_name').value)}&topic=${encodeURIComponent(document.getElementById('current_quiz_title').innerText)}&score=${score}&full=${currentQuestions.length}`;
   
   fetch(`${API_URL}?${payload}`)
     .then(r => r.json())
     .then(res => {
-      document.getElementById('loading-overlay').style.display = 'none';
+      Swal.close();
       document.getElementById('quiz-container').style.display = 'none';
       document.getElementById('quiz-result').style.display = 'block';
       
       const pct = (score / currentQuestions.length) * 100;
-      document.getElementById('result-icon').innerHTML = pct >= 80 ? '<i class="fas fa-trophy" style="color:#f59e0b;"></i>' : (pct >= 50 ? '<i class="fas fa-thumbs-up" style="color:#0ea5e9;"></i>' : '<i class="fas fa-book" style="color:#64748b;"></i>');
+      let iconHtml = '';
+      
+      if (pct >= 80) {
+         iconHtml = '<i class="fas fa-trophy" style="color:#f59e0b;"></i>';
+         // 🔥 ยิงพลุฉลองคนเก่ง! 🔥
+         confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 }, zIndex: 3000 });
+      } else if (pct >= 50) {
+         iconHtml = '<i class="fas fa-thumbs-up" style="color:#0ea5e9;"></i>';
+      } else {
+         iconHtml = '<i class="fas fa-book" style="color:#64748b;"></i>';
+      }
+      
+      document.getElementById('result-icon').innerHTML = iconHtml;
       document.getElementById('result-score-text').innerText = `คุณทำได้ ${score} / ${currentQuestions.length} คะแนน`;
       document.getElementById('result-attempt-text').innerText = `(สอบครั้งที่ ${res.attempt})`;
+    }).catch(e => {
+        Swal.close();
+        Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: 'ไม่สามารถบันทึกคะแนนได้', confirmButtonColor: '#ef4444' });
     });
 }
 
