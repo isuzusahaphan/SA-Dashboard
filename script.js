@@ -1,4 +1,3 @@
-// ใส่ API URL ของคุณ
 const API_URL = "https://script.google.com/macros/s/AKfycbzRJxiBfL87wbDDapTklIW0l8Beio_DHPGfLlysYSTiU5kzlTV-3ubZekC6_1G1hWt3/exec";
 
 let barChartInst = null;
@@ -73,7 +72,7 @@ function renderDashboard(data) {
   const now = new Date();
   document.getElementById('last_update').innerText = "อัปเดตข้อมูลล่าสุด: " + now.toLocaleTimeString('th-TH');
 
-  // --- 1. Bar Chart (ยืดสูงขึ้น) ---
+  // --- 1. Bar Chart (ยืดสูงขึ้น และเปลี่ยนสีไม่นัดเป็นแดง) ---
   const barCtx = document.getElementById('barChart').getContext('2d');
   if (barChartInst) barChartInst.destroy();
   barChartInst = new Chart(barCtx, {
@@ -84,13 +83,13 @@ function renderDashboard(data) {
         { 
           label: 'นัดหมายสำเร็จ', 
           data: [data.ekachai.appointed, data.pornthep.appointed], 
-          backgroundColor: '#10b981', 
+          backgroundColor: '#10b981', // สีเขียว
           borderRadius: 4 
         },
         { 
           label: 'ไม่นัดหมาย', 
           data: [data.ekachai.notAppointed, data.pornthep.notAppointed], 
-          backgroundColor: '#0ea5e9',
+          backgroundColor: '#ef4444', // 🔥 เปลี่ยนเป็นสีแดงโทนพรีเมียม (Red-500)
           borderRadius: 4
         }
       ]
@@ -99,7 +98,7 @@ function renderDashboard(data) {
       responsive: true, 
       maintainAspectRatio: false, // บีบกราฟตาม CSS
       scales: { 
-        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 12 } }, grid: { color: '#f1f5f9' }, suggestedMax: 8 }, // ปรับ suggestedMax ให้ยืดขึ้น
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 12 } }, grid: { color: '#f1f5f9' }, suggestedMax: 8 }, 
         x: { ticks: { font: { size: 12 } }, grid: { display: false } }
       },
       plugins: {
@@ -109,7 +108,7 @@ function renderDashboard(data) {
           color: '#334155',
           anchor: 'end',
           align: 'top',
-          font: { weight: 'bold', size: 14 }, // ขยายขนาดจาก 12 เป็น 14
+          font: { weight: 'bold', size: 14 }, 
           formatter: (value) => value > 0 ? value : ''
         }
       }
@@ -129,7 +128,7 @@ function renderDashboard(data) {
       labels: ['นัดหมายสำเร็จ', 'ไม่นัดหมาย', 'รอดำเนินการ'],
       datasets: [{
         data: [totalAppointed, totalNotAppointed, totalPending],
-        backgroundColor: ['#00E396', '#FF4560', '#E2E8F0'],
+        backgroundColor: ['#00E396', '#FF4560', '#E2E8F0'], // เขียวสว่าง, แดงสว่าง, เทาอ่อน
         borderWidth: 0,
         hoverOffset: 4
       }]
@@ -137,17 +136,17 @@ function renderDashboard(data) {
     options: { 
       responsive: true,
       maintainAspectRatio: false, 
-      cutout: '60%', // 🔥 ปรับเส้นโดนัทให้หนาขึ้น (วงตรงกลางเล็กลง) เพื่อให้ดูเต็มในพื้นที่ใหญ่ 🔥
+      cutout: '60%', // ปรับเส้นโดนัทให้หนาขึ้น
       plugins: {
-        legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8, padding: 20, font: { size: 13 } } }, // ขยายระยะ padding และขนาดตัวเลือก
+        legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8, padding: 20, font: { size: 13 } } }, 
         // ขยายขนาดตัวเลขและเปอร์เซ็นต์บน Donut Chart
         datalabels: {
           color: '#ffffff',
-          font: { weight: 'bold', size: 14 }, // 🔥 ขยายขนาดจาก 11 เป็น 14 🔥
+          font: { weight: 'bold', size: 14 }, 
           textAlign: 'center',
           textShadowBlur: 4,
           textShadowColor: 'rgba(0,0,0,0.3)',
-          padding: 8, // 🔥 เพิ่ม padding รอบตัวเลข 🔥
+          padding: 8, 
           formatter: (value, ctx) => {
             if (value === 0) return ''; 
             let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
