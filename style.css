@@ -6,6 +6,7 @@ body {
   margin: 0; 
   padding: 20px 30px; 
   color: #334155; 
+  padding-bottom: 40px; /* เพิ่ม padding ท้ายสุดเพื่อให้ดูไม่ติดขอบเกินไป */
 }
 
 .header { 
@@ -13,34 +14,34 @@ body {
   align-items: center; 
   justify-content: space-between; 
   background: #ffffff;
-  padding: 12px 20px;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  padding: 15px 25px; /* เพิ่ม padding หัวข้อ */
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
   margin-bottom: 25px;
 }
 .header-left { flex: 1; display: flex; align-items: center; }
 .header-center { flex: 2; text-align: center; }
 .header-right { flex: 1; } 
 
-.logo { height: 35px; object-fit: contain; }
+.logo { height: 40px; object-fit: contain; } /* ขยายโลโก้ */
 
-.header h1 { color: #1e293b; margin: 0 0 4px 0; font-size: 16px; font-weight: 600; }
-.header p { margin: 0; font-size: 11px; color: #64748b; font-weight: 300;}
+.header h1 { color: #1e293b; margin: 0 0 5px 0; font-size: 18px; font-weight: 600; } /* ขยายขนาดหัวข้อ */
+.header p { margin: 0; font-size: 12px; color: #64748b; font-weight: 300;}
 
 .controls { 
   display: flex; 
   justify-content: center; 
-  gap: 10px; 
-  margin-bottom: 20px; 
+  gap: 12px; 
+  margin-bottom: 25px; 
   align-items: center; 
-  font-size: 13px;
+  font-size: 14px; /* ขยายขนาดตัวเลือก */
   color: #475569;
 }
 select { 
-  padding: 6px 12px; 
-  border-radius: 6px; 
+  padding: 8px 16px; 
+  border-radius: 8px; 
   border: 1px solid #cbd5e1; 
-  font-size: 13px; 
+  font-size: 14px; 
   outline: none; 
   background: #ffffff;
   font-family: 'Prompt', sans-serif;
@@ -51,70 +52,73 @@ select:focus {
   border-color: #3b82f6; 
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
 }
-.loading-text { color: #3b82f6; font-size: 12px; font-weight: 500; }
+.loading-text { color: #3b82f6; font-size: 13px; font-weight: 500; }
 
+/* Summary Cards (ขยายขนาด) */
 .summary-cards { 
   display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-  gap: 15px; 
-  margin-bottom: 25px; 
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* ขยายขนาดการ์ดเริ่มต้น */
+  gap: 20px; /* เพิ่มระยะห่าง */
+  margin-bottom: 30px; 
 }
 .card { 
   background: #ffffff; 
-  padding: 15px 20px; 
-  border-radius: 10px; 
-  box-shadow: 0 2px 6px rgba(0,0,0,0.02); 
+  padding: 20px 25px; /* เพิ่ม padding การ์ด */
+  border-radius: 12px; 
+  box-shadow: 0 3px 10px rgba(0,0,0,0.03); 
   text-align: center; 
-  border-left: 4px solid #cbd5e1; 
+  border-left: 5px solid #cbd5e1; /* ขยายความกว้างขอบ */
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card:hover { 
-  transform: translateY(-3px); 
-  box-shadow: 0 6px 15px rgba(0,0,0,0.05); 
+  transform: translateY(-4px); 
+  box-shadow: 0 10px 25px rgba(0,0,0,0.07); 
 }
 .card.green { border-left-color: #10b981; }
 .card.blue { border-left-color: #0ea5e9; }
 
-.card h3 { margin: 0 0 5px 0; color: #64748b; font-size: 12px; font-weight: 500; }
-.card .number { font-size: 26px; font-weight: 600; color: #1e293b; line-height: 1.2; }
+.card h3 { margin: 0 0 8px 0; color: #64748b; font-size: 13px; font-weight: 500; }
+.card .number { font-size: 36px; font-weight: 600; color: #1e293b; line-height: 1.1; } /* ขยายขนาดตัวเลข */
 .card.green .number { color: #10b981; }
 .card.blue .number { color: #0ea5e9; }
 
+/* Charts Area (ขยายพื้นที่) */
 .charts-container { 
   display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-  gap: 20px; 
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); /* ขยายขนาดกรอบกราฟเริ่มต้น */
+  gap: 30px; /* เพิ่มระยะห่าง */
 }
 .chart-box { 
   background: #ffffff; 
-  padding: 20px; 
-  border-radius: 10px; 
-  box-shadow: 0 2px 6px rgba(0,0,0,0.02); 
+  padding: 25px; /* เพิ่ม padding กรอบกราฟ */
+  border-radius: 12px; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
 }
 .chart-box h3 { 
   text-align: center; 
   color: #475569; 
-  margin: 0 0 15px 0; 
-  font-size: 13px; 
+  margin: 0 0 20px 0; 
+  font-size: 16px; /* ขยายขนาดหัวข้อกราฟ */
   font-weight: 500; 
 }
+
+/* 🔥 ส่วนที่ปรับขยายความสูง: ขยายความสูงอย่างมากเพื่อให้ยืดตัวลงมาด้านล่าง 🔥 */
 .canvas-wrapper { 
   position: relative; 
-  height: 200px; 
+  height: 400px; /* 🔥 ขยายความสูงจากเดิม 200px เป็น 400px 🔥 */
   width: 100%; 
   display: flex; 
   justify-content: center;
 }
 
-/* กล่องข้อความอัปเดตล่าสุด ใต้กราฟแท่ง */
 .sa-last-update {
   text-align: center;
-  font-size: 11.5px;
+  font-size: 13px; /* ขยายขนาดตัวอักษรล่าสุด */
   color: #64748b;
-  margin-top: 15px;
+  margin-top: 20px; /* เพิ่มระยะห่างด้านบน */
   background: #f1f5f9;
-  padding: 8px;
-  border-radius: 6px;
+  padding: 10px; /* เพิ่ม padding */
+  border-radius: 8px;
   border: 1px solid #e2e8f0;
 }
 .sa-last-update b { color: #334155; }
@@ -122,12 +126,13 @@ select:focus {
 
 .status-text { 
   text-align: center; 
-  font-size: 11px; 
+  font-size: 12px; /* ขยายขนาดตัวอักษรอัปเดตล่าสุดของแอป */
   color: #94a3b8; 
-  margin-top: 20px; 
+  margin-top: 25px; 
 }
 
 @media (max-width: 600px) {
-  .header { flex-direction: column; gap: 10px; }
+  .header { flex-direction: column; gap: 10px; padding: 10px; }
   .header-left, .header-right { flex: none; width: 100%; text-align: center;}
+  .canvas-wrapper { height: 300px; } /* ปรับขนาดเมื่อจอมือถือ */
 }
