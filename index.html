@@ -4,10 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Executive Dashboard & Training</title>
+  
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
@@ -23,14 +28,13 @@
     <div class="header-right">
       <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab('tab-dashboard', this)"><i class="fas fa-chart-line"></i> แดชบอร์ดสรุปผล</button>
-        <button class="tab-btn" onclick="switchTab('tab-training', this)"><i class="fas fa-graduation-cap"></i> ศูนย์ฝึกอบรมพนักงาน</button>
+        <button class="tab-btn" onclick="switchTab('tab-training', this)"><i class="fas fa-graduation-cap"></i> ศูนย์ฝึกอบรม</button>
       </div>
 
       <div class="control-box" id="top-controls">
         <i class="fas fa-calendar-alt" style="color: #64748b; margin-right: 8px;"></i>
         <label>เลือกรอบบิล:</label>
         <select id="sheetSelect"></select>
-        <span id="loading" class="loading-text" style="display:none;"><i class="fas fa-spinner fa-spin"></i></span>
       </div>
     </div>
   </div>
@@ -150,11 +154,6 @@
       </div>
 
     </div>
-  </div>
-
-  <div id="loading-overlay" class="overlay" style="display: none;">
-    <div class="spinner"></div>
-    <p style="color: white; font-weight: 500; margin-top: 15px; font-size: 15px;">กำลังเชื่อมต่อฐานข้อมูล...</p>
   </div>
 
   <script src="script.js"></script>
