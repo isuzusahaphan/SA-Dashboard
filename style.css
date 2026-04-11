@@ -1,0 +1,120 @@
+/* นำเข้าฟอนต์ Prompt ให้ดูทันสมัยและพรีเมียม */
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap');
+
+body { 
+  font-family: 'Prompt', 'Segoe UI', sans-serif; 
+  background-color: #f8fafc; /* เปลี่ยนเป็นสีเทาอ่อนแบบสะอาดตา */
+  margin: 0; 
+  padding: 20px 30px; 
+  color: #334155; 
+}
+
+/* Header */
+.header { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  background: #ffffff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  margin-bottom: 25px;
+}
+.header-left { flex: 1; display: flex; align-items: center; }
+.header-center { flex: 2; text-align: center; }
+.header-right { flex: 1; } /* เว้นไว้เพื่อ Balance พื้นที่ให้ตรงกลางเป๊ะๆ */
+
+.logo { height: 35px; object-fit: contain; }
+
+.header h1 { color: #1e293b; margin: 0 0 4px 0; font-size: 16px; font-weight: 600; }
+.header p { margin: 0; font-size: 11px; color: #64748b; font-weight: 300;}
+
+/* Controls */
+.controls { 
+  display: flex; 
+  justify-content: center; 
+  gap: 10px; 
+  margin-bottom: 20px; 
+  align-items: center; 
+  font-size: 13px;
+  color: #475569;
+}
+select { 
+  padding: 6px 12px; 
+  border-radius: 6px; 
+  border: 1px solid #cbd5e1; 
+  font-size: 13px; 
+  outline: none; 
+  background: #ffffff;
+  font-family: 'Prompt', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+select:focus { 
+  border-color: #3b82f6; 
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
+}
+.loading-text { color: #3b82f6; font-size: 12px; font-weight: 500; }
+
+/* Summary Cards (Minimalist Style) */
+.summary-cards { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: 15px; 
+  margin-bottom: 25px; 
+}
+.card { 
+  background: #ffffff; 
+  padding: 15px 20px; 
+  border-radius: 10px; 
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02); 
+  text-align: center; 
+  border-left: 4px solid #cbd5e1; 
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover { 
+  transform: translateY(-3px); 
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05); 
+}
+.card.green { border-left-color: #10b981; }
+.card.blue { border-left-color: #0ea5e9; }
+
+.card h3 { margin: 0 0 5px 0; color: #64748b; font-size: 12px; font-weight: 500; }
+.card .number { font-size: 26px; font-weight: 600; color: #1e293b; line-height: 1.2; }
+.card.green .number { color: #10b981; }
+.card.blue .number { color: #0ea5e9; }
+
+/* Charts Area */
+.charts-container { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+  gap: 20px; 
+}
+.chart-box { 
+  background: #ffffff; 
+  padding: 20px; 
+  border-radius: 10px; 
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02); 
+}
+.chart-box h3 { 
+  text-align: center; 
+  color: #475569; 
+  margin: 0 0 15px 0; 
+  font-size: 13px; 
+  font-weight: 500; 
+}
+/* บังคับขนาดกราฟให้กระชับ ไม่ยืดใหญ่เกินไป */
+.canvas-wrapper { 
+  position: relative; 
+  height: 200px; 
+  width: 100%; 
+  display: flex; 
+  justify-content: center;
+}
+
+.status-text { 
+  text-align: center; 
+  font-size: 11px; 
+  color: #94a3b8; 
+  margin-top: 20px; 
+}

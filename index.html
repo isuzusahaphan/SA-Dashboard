@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard ติดตามลูกค้าค้างซ่อม</title>
+  
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <img src="logo.png" alt="Company Logo" class="logo">
+    </div>
+    <div class="header-center">
+      <h1>ข้อมูลการโทรติดตามลูกค้ารายการค้างซ่อม</h1>
+      <p>อัปเดตข้อมูลอัตโนมัติ (Real-time)</p>
+    </div>
+    <div class="header-right"></div>
+  </div>
+
+  <div class="controls">
+    <label>เลือกรอบบิล (Sheet):</label>
+    <select id="sheetSelect"></select>
+    <span id="loading" class="loading-text" style="display:none;">กำลังโหลด...</span>
+  </div>
+
+  <div class="summary-cards">
+    <div class="card">
+      <h3>รวมทั้งหมด (คัน)</h3>
+      <div class="number" id="tot_all">0</div>
+    </div>
+    <div class="card green">
+      <h3>เอกชัย (นัดสำเร็จ)</h3>
+      <div class="number" id="tot_eka">0</div>
+    </div>
+    <div class="card blue">
+      <h3>พรเทพ (นัดสำเร็จ)</h3>
+      <div class="number" id="tot_porn">0</div>
+    </div>
+  </div>
+
+  <div class="charts-container">
+    <div class="chart-box">
+      <h3>เปรียบเทียบผลงานการนัดหมาย (คัน)</h3>
+      <div class="canvas-wrapper">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-box">
+      <h3>สัดส่วนการนัดหมายโดยรวม</h3>
+      <div class="canvas-wrapper">
+        <canvas id="pieChart"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <div class="status-text" id="last_update"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
