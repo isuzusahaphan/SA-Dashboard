@@ -7,6 +7,7 @@ Chart.defaults.font.family = "'Prompt', sans-serif";
 Chart.defaults.color = '#64748b';
 
 let dashboardInterval = null;
+let allScoreHistory = []; // 🌟 [เพิ่มใหม่] ตัวแปรเก็บประวัติคะแนนไว้ทำ Filter
 
 // ฟังก์ชันโชว์ Loading หรูๆ
 function showLoading(text) {
@@ -188,12 +189,12 @@ function loadQuizTopics() {
     });
 }
 
+// 🌟 [อัปเดตใหม่] โหลดประวัติและเตรียมตัวกรอง
 function loadScoreHistory() {
   fetch(`${API_URL}?action=get_score_history`)
     .then(r => r.json())
     .then(res => {
       if(res.result === 'success') {
-        let html = '';
         const reversedData = res.data.reverse();
         const uniqueHistory = [];
         const seen = new Set();
@@ -203,18 +204,54 @@ function loadScoreHistory() {
             if(!seen.has(key)) { seen.add(key); uniqueHistory.push(h); }
         });
 
-        uniqueHistory.slice(0, 10).forEach(h => {
-          let scoreClass = (h.score/h.full >= 0.8) ? '#10b981' : (h.score/h.full >= 0.5 ? '#f59e0b' : '#ef4444');
-          html += `
-            <div class="history-item" style="border-left: 4px solid ${scoreClass}; background:#fff; padding: 15px; border-radius: 8px; margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-              <div><b style="color:#1e293b; font-size: 14px;">${h.name}</b><br><span style="color:#64748b; font-size: 12.5px;">${h.topic}</span><br><small style="color:#94a3b8;">${new Date(h.date).toLocaleDateString('th-TH')}</small></div>
-              <div style="text-align:right; font-size:12.5px; color:#475569;">คะแนน: <b style="color:${scoreClass}; font-size: 18px;">${h.score}/${h.full}</b><br><span style="font-size: 11px;">รอบที่สอบ: ${h.attempt}</span></div>
-            </div>`;
+        // 1. เก็บประวัติลงตัวแปร Global
+        allScoreHistory = uniqueHistory;
+
+        // 2. สร้างรายการ Dropdown หัวข้อให้อัตโนมัติ
+        const topicFilter = document.getElementById('filter_quiz_topic');
+        const uniqueTopics = [...new Set(allScoreHistory.map(item => item.topic))];
+        let topicOptions = '<option value="all">📖 ทุกหัวข้อ</option>';
+        uniqueTopics.forEach(t => {
+            topicOptions += `<option value="${t}">${t}</option>`;
         });
-        document.getElementById('score-history-container').innerHTML = html || '<p style="text-align:center; color:#94a3b8; padding: 20px;">ยังไม่มีประวัติการทำแบบทดสอบ</p>';
+        if(topicFilter) topicFilter.innerHTML = topicOptions;
+
+        // 3. เริ่มทำการกรองและแสดงผลครั้งแรก
+        filterScoreHistory();
       }
     });
 }
+
+// 🌟 [เพิ่มใหม่] ฟังก์ชันกรองข้อมูลเมื่อเปลี่ยน Dropdown
+function filterScoreHistory() {
+    const nameFilter = document.getElementById('filter_quiz_name').value;
+    const topicFilter = document.getElementById('filter_quiz_topic').value;
+
+    let filteredList = allScoreHistory.filter(h => {
+        // ใช้ includes แทนการเทียบตรงๆ เผื่อกรณีชื่อในระบบยาวกว่า (เช่น เอกชัย เกษรบัว)
+        let matchName = (nameFilter === 'all' || h.name.includes(nameFilter));
+        let matchTopic = (topicFilter === 'all' || h.topic === topicFilter);
+        return matchName && matchTopic;
+    });
+
+    renderScoreHistory(filteredList);
+}
+
+// 🌟 [เพิ่มใหม่] ฟังก์ชันวาดกล่องประวัติ
+function renderScoreHistory(dataList) {
+    let html = '';
+    dataList.slice(0, 20).forEach(h => {
+        let scoreClass = (h.score/h.full >= 0.8) ? '#10b981' : (h.score/h.full >= 0.5 ? '#f59e0b' : '#ef4444');
+        html += `
+        <div class="history-item" style="border-left: 4px solid ${scoreClass}; background:#fff; padding: 15px; border-radius: 8px; margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <div><b style="color:#1e293b; font-size: 14px;">${h.name}</b><br><span style="color:#64748b; font-size: 12.5px;">${h.topic}</span><br><small style="color:#94a3b8;">${new Date(h.date).toLocaleDateString('th-TH')}</small></div>
+            <div style="text-align:right; font-size:12.5px; color:#475569;">คะแนน: <b style="color:${scoreClass}; font-size: 18px;">${h.score}/${h.full}</b><br><span style="font-size: 11px;">รอบที่สอบ: ${h.attempt}</span></div>
+        </div>`;
+    });
+    
+    document.getElementById('score-history-container').innerHTML = html || '<p style="text-align:center; color:#94a3b8; padding: 20px;">ไม่พบประวัติที่ตรงกับเงื่อนไข</p>';
+}
+
 
 function prepareQuiz() {
   const topic = document.getElementById('quiz_topic_list').value;
