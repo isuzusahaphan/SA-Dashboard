@@ -35,6 +35,9 @@
         <i class="fas fa-calendar-alt" style="color: #64748b; margin-right: 8px;"></i>
         <label>เลือกรอบบิล:</label>
         <select id="sheetSelect"></select>
+        <a id="viewSheetBtn" href="#" target="_blank" class="view-sheet-link" title="เปิดดู Google Sheet">
+          <i class="fas fa-file-excel"></i> เปิดชีต
+        </a>
       </div>
     </div>
   </div>
@@ -60,10 +63,20 @@
       <div class="card green">
         <h3><i class="fas fa-check-circle"></i> เอกชัย (นัดสำเร็จ)</h3>
         <div class="number" id="tot_eka">0</div>
+        <div class="card-stats">
+          <div class="stat-item" id="eka_called_stat">โทรแล้ว: 0/0 (0%)</div>
+          <div class="stat-item" id="eka_appointed_pct">นัดสำเร็จ: 0%</div>
+          <div class="stat-item" id="eka_not_appointed_pct">ไม่นัด: 0%</div>
+        </div>
       </div>
       <div class="card blue">
         <h3><i class="fas fa-check-circle"></i> พรเทพ (นัดสำเร็จ)</h3>
         <div class="number" id="tot_porn">0</div>
+        <div class="card-stats">
+          <div class="stat-item" id="porn_called_stat">โทรแล้ว: 0/0 (0%)</div>
+          <div class="stat-item" id="porn_appointed_pct">นัดสำเร็จ: 0%</div>
+          <div class="stat-item" id="porn_not_appointed_pct">ไม่นัด: 0%</div>
+        </div>
       </div>
     </div>
 
