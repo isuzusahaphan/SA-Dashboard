@@ -7,7 +7,8 @@ Chart.defaults.font.family = "'Prompt', sans-serif";
 Chart.defaults.color = '#64748b';
 
 let dashboardInterval = null;
-let allScoreHistory = []; // 🌟 [เพิ่มใหม่] ตัวแปรเก็บประวัติคะแนนไว้ทำ Filter
+let allScoreHistory = []; // ตัวแปรเก็บประวัติคะแนนไว้ทำ Filter
+let sheetsDataList = []; // 🌟 [เพิ่มใหม่] ตัวแปรเก็บข้อมูล Sheet Name และ URL
 
 // ฟังก์ชันโชว์ Loading หรูๆ
 function showLoading(text) {
@@ -46,23 +47,43 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(response => response.json())
     .then(res => {
       if (res.result === 'success') {
-        const names = res.data;
+        sheetsDataList = res.data; // 🌟 [อัปเดต] รับข้อมูลเป็น Array Object [{name, url}]
         const select = document.getElementById('sheetSelect');
-        names.forEach(name => {
+        
+        sheetsDataList.forEach(sheet => {
           let opt = document.createElement('option');
-          opt.value = name;
-          opt.innerHTML = name;
+          opt.value = sheet.name;
+          opt.innerHTML = sheet.name;
           select.appendChild(opt);
         });
-        if (names.length > 0) {
-           select.value = names.includes("2 มี.ค. - 10 เม.ย. 69") ? "2 มี.ค. - 10 เม.ย. 69" : names[0];
+        
+        if (sheetsDataList.length > 0) {
+           let defaultSheet = sheetsDataList.find(s => s.name === "2 มี.ค. - 10 เม.ย. 69");
+           select.value = defaultSheet ? defaultSheet.name : sheetsDataList[0].name;
         }
-        select.addEventListener('change', loadData);
+        
+        select.addEventListener('change', () => {
+            updateSheetLink();
+            loadData();
+        });
+        
+        updateSheetLink(); // อัปเดตลิงก์ครั้งแรก
         loadData(); 
         dashboardInterval = setInterval(loadData, 30000);
       }
     });
 });
+
+// 🌟 [เพิ่มใหม่] ฟังก์ชันอัปเดต URL ของปุ่มลิงก์เปิด Google Sheet
+function updateSheetLink() {
+  const selectedName = document.getElementById('sheetSelect').value;
+  const sheetObj = sheetsDataList.find(s => s.name === selectedName);
+  const linkBtn = document.getElementById('viewSheetBtn');
+  
+  if (sheetObj && linkBtn) {
+    linkBtn.href = sheetObj.url;
+  }
+}
 
 // ป้องกันการยิงพลุซ้ำซากใน 1 Session
 let hasCelebrated100 = false; 
@@ -96,16 +117,11 @@ function renderDashboard(data) {
   if (percent >= 100) {
     progFill.style.background = 'linear-gradient(90deg, #10b981, #34d399)'; progText.style.color = '#10b981';
     progMotiv.innerHTML = '🎉 <b>สุดยอดเยี่ยม!</b> โทรติดตามลูกค้าสำเร็จครบ 100% แล้ว!'; progMotiv.style.color = '#10b981';
-    
-    // 🔥 ยิงพลุฉลองความสำเร็จ! (ยิงครั้งเดียวต่อการเปิดหน้าเว็บ)
-    if(!hasCelebrated100) {
-        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 3000 });
-        hasCelebrated100 = true;
-    }
+    if(!hasCelebrated100) { confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 3000 }); hasCelebrated100 = true; }
   } else if (percent >= 80) {
     progFill.style.background = 'linear-gradient(90deg, #f59e0b, #34d399)'; progText.style.color = '#d97706';
     progMotiv.innerHTML = '🔥 <b>โค้งสุดท้าย!</b> ลุยอีกนิดเดียวเป้าหมายอยู่แค่เอื้อม'; progMotiv.style.color = '#d97706';
-    hasCelebrated100 = false; // รีเซ็ตเผื่อเปลี่ยน Sheet
+    hasCelebrated100 = false; 
   } else if (percent >= 50) {
     progFill.style.background = 'linear-gradient(90deg, #f97316, #f59e0b)'; progText.style.color = '#f97316';
     progMotiv.innerHTML = '💪 <b>มาเกินครึ่งทางแล้ว!</b> รักษามาตรฐานที่ยอดเยี่ยมนี้ต่อไป'; progMotiv.style.color = '#f97316';
@@ -120,13 +136,38 @@ function renderDashboard(data) {
     hasCelebrated100 = false;
   }
 
+  // อัปเดตตัวเลขหลัก
   document.getElementById('tot_all').innerText = data.total;
   document.getElementById('tot_eka').innerText = data.ekachai.appointed;
   document.getElementById('tot_porn').innerText = data.pornthep.appointed;
+  
+  // 🌟 [อัปเดต] คำนวณสถิติย่อย (Ekachai)
+  let ekaTarget = data.ekachai.appointed + data.ekachai.notAppointed + data.ekachai.pending;
+  let ekaCalled = data.ekachai.appointed + data.ekachai.notAppointed;
+  let ekaCalledPct = ekaTarget > 0 ? Math.round((ekaCalled / ekaTarget) * 100) : 0;
+  let ekaAppointPct = ekaCalled > 0 ? Math.round((data.ekachai.appointed / ekaCalled) * 100) : 0;
+  let ekaNotAppointPct = ekaCalled > 0 ? Math.round((data.ekachai.notAppointed / ekaCalled) * 100) : 0;
+  
+  document.getElementById('eka_called_stat').innerHTML = `<i class="fas fa-phone-alt"></i> โทรแล้ว: <b>${ekaCalled}/${ekaTarget}</b> (${ekaCalledPct}%)`;
+  document.getElementById('eka_appointed_pct').innerHTML = `<i class="fas fa-check"></i> นัดสำเร็จ: <b style="color:#10b981;">${ekaAppointPct}%</b>`;
+  document.getElementById('eka_not_appointed_pct').innerHTML = `<i class="fas fa-times"></i> ไม่นัด: <b style="color:#ef4444;">${ekaNotAppointPct}%</b>`;
+
+  // 🌟 [อัปเดต] คำนวณสถิติย่อย (Pornthep)
+  let pornTarget = data.pornthep.appointed + data.pornthep.notAppointed + data.pornthep.pending;
+  let pornCalled = data.pornthep.appointed + data.pornthep.notAppointed;
+  let pornCalledPct = pornTarget > 0 ? Math.round((pornCalled / pornTarget) * 100) : 0;
+  let pornAppointPct = pornCalled > 0 ? Math.round((data.pornthep.appointed / pornCalled) * 100) : 0;
+  let pornNotAppointPct = pornCalled > 0 ? Math.round((data.pornthep.notAppointed / pornCalled) * 100) : 0;
+  
+  document.getElementById('porn_called_stat').innerHTML = `<i class="fas fa-phone-alt"></i> โทรแล้ว: <b>${pornCalled}/${pornTarget}</b> (${pornCalledPct}%)`;
+  document.getElementById('porn_appointed_pct').innerHTML = `<i class="fas fa-check"></i> นัดสำเร็จ: <b style="color:#10b981;">${pornAppointPct}%</b>`;
+  document.getElementById('porn_not_appointed_pct').innerHTML = `<i class="fas fa-times"></i> ไม่นัด: <b style="color:#ef4444;">${pornNotAppointPct}%</b>`;
+
   document.getElementById('update_eka').innerText = data.ekachai.lastUpdate || '-';
   document.getElementById('update_porn').innerText = data.pornthep.lastUpdate || '-';
   document.getElementById('last_update').innerText = "อัปเดตข้อมูลล่าสุด: " + new Date().toLocaleTimeString('th-TH');
 
+  // กราฟแท่ง
   const barCtx = document.getElementById('barChart').getContext('2d');
   let barGradientGreen = barCtx.createLinearGradient(0, 0, 0, 360); barGradientGreen.addColorStop(0, '#34d399'); barGradientGreen.addColorStop(1, '#059669'); 
   let barGradientRed = barCtx.createLinearGradient(0, 0, 0, 360); barGradientRed.addColorStop(0, '#f87171'); barGradientRed.addColorStop(1, '#dc2626'); 
@@ -148,6 +189,7 @@ function renderDashboard(data) {
     }
   });
 
+  // กราฟวงกลม
   const pieCtx = document.getElementById('pieChart').getContext('2d');
   let pieGradGreen = pieCtx.createLinearGradient(0, 0, 0, 360); pieGradGreen.addColorStop(0, '#34d399'); pieGradGreen.addColorStop(1, '#059669');
   let pieGradRed = pieCtx.createLinearGradient(0, 0, 0, 360); pieGradRed.addColorStop(0, '#fb7185'); pieGradRed.addColorStop(1, '#e11d48');
@@ -171,7 +213,7 @@ function renderDashboard(data) {
 }
 
 // ==========================================
-// 🌟 4. Training Center Logic
+// 4. Training Center Logic
 // ==========================================
 let currentQuestions = [];
 let currentQuestionIndex = 0;
@@ -189,7 +231,6 @@ function loadQuizTopics() {
     });
 }
 
-// 🌟 [อัปเดตใหม่] โหลดประวัติและเตรียมตัวกรอง
 function loadScoreHistory() {
   fetch(`${API_URL}?action=get_score_history`)
     .then(r => r.json())
@@ -204,10 +245,8 @@ function loadScoreHistory() {
             if(!seen.has(key)) { seen.add(key); uniqueHistory.push(h); }
         });
 
-        // 1. เก็บประวัติลงตัวแปร Global
         allScoreHistory = uniqueHistory;
 
-        // 2. สร้างรายการ Dropdown หัวข้อให้อัตโนมัติ
         const topicFilter = document.getElementById('filter_quiz_topic');
         const uniqueTopics = [...new Set(allScoreHistory.map(item => item.topic))];
         let topicOptions = '<option value="all">📖 ทุกหัวข้อ</option>';
@@ -216,19 +255,16 @@ function loadScoreHistory() {
         });
         if(topicFilter) topicFilter.innerHTML = topicOptions;
 
-        // 3. เริ่มทำการกรองและแสดงผลครั้งแรก
         filterScoreHistory();
       }
     });
 }
 
-// 🌟 [เพิ่มใหม่] ฟังก์ชันกรองข้อมูลเมื่อเปลี่ยน Dropdown
 function filterScoreHistory() {
     const nameFilter = document.getElementById('filter_quiz_name').value;
     const topicFilter = document.getElementById('filter_quiz_topic').value;
 
     let filteredList = allScoreHistory.filter(h => {
-        // ใช้ includes แทนการเทียบตรงๆ เผื่อกรณีชื่อในระบบยาวกว่า (เช่น เอกชัย เกษรบัว)
         let matchName = (nameFilter === 'all' || h.name.includes(nameFilter));
         let matchTopic = (topicFilter === 'all' || h.topic === topicFilter);
         return matchName && matchTopic;
@@ -237,13 +273,12 @@ function filterScoreHistory() {
     renderScoreHistory(filteredList);
 }
 
-// 🌟 [เพิ่มใหม่] ฟังก์ชันวาดกล่องประวัติ
 function renderScoreHistory(dataList) {
     let html = '';
     dataList.slice(0, 20).forEach(h => {
         let scoreClass = (h.score/h.full >= 0.8) ? '#10b981' : (h.score/h.full >= 0.5 ? '#f59e0b' : '#ef4444');
         html += `
-        <div class="history-item" style="border-left: 4px solid ${scoreClass}; background:#fff; padding: 15px; border-radius: 8px; margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <div class="history-item" style="border-left: 4px solid ${scoreClass}; background:#fff; padding: 15px; border-radius: 8px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
             <div><b style="color:#1e293b; font-size: 14px;">${h.name}</b><br><span style="color:#64748b; font-size: 12.5px;">${h.topic}</span><br><small style="color:#94a3b8;">${new Date(h.date).toLocaleDateString('th-TH')}</small></div>
             <div style="text-align:right; font-size:12.5px; color:#475569;">คะแนน: <b style="color:${scoreClass}; font-size: 18px;">${h.score}/${h.full}</b><br><span style="font-size: 11px;">รอบที่สอบ: ${h.attempt}</span></div>
         </div>`;
@@ -252,10 +287,8 @@ function renderScoreHistory(dataList) {
     document.getElementById('score-history-container').innerHTML = html || '<p style="text-align:center; color:#94a3b8; padding: 20px;">ไม่พบประวัติที่ตรงกับเงื่อนไข</p>';
 }
 
-
 function prepareQuiz() {
   const topic = document.getElementById('quiz_topic_list').value;
-  // 🔥 เปลี่ยนจาก alert() ธรรมดา เป็น SweetAlert2 🔥
   if(!topic) return Swal.fire({ icon: 'warning', title: 'เดี๋ยวก่อน!', text: 'กรุณาเลือกหัวข้อแบบทดสอบก่อนครับ', confirmButtonColor: '#0ea5e9' });
   
   showLoading('กำลังเตรียมข้อสอบ...');
@@ -263,7 +296,7 @@ function prepareQuiz() {
   fetch(`${API_URL}?action=get_quiz_questions&topic=${encodeURIComponent(topic)}`)
     .then(r => r.json())
     .then(res => {
-      Swal.close(); // ปิดหน้าต่าง Loading
+      Swal.close(); 
       if(res.result === 'success' && res.data.length > 0) {
         currentQuestions = res.data;
         currentQuestionIndex = 0;
@@ -359,7 +392,6 @@ function finishQuiz() {
       
       if (pct >= 80) {
          iconHtml = '<i class="fas fa-trophy" style="color:#f59e0b;"></i>';
-         // 🔥 ยิงพลุฉลองคนเก่ง! 🔥
          confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 }, zIndex: 3000 });
       } else if (pct >= 50) {
          iconHtml = '<i class="fas fa-thumbs-up" style="color:#0ea5e9;"></i>';
